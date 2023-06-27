@@ -8,13 +8,13 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
     integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-
+  <link rel="stylesheet" href="/public/main.css">
   <title>Hello, list</title>
 </head>
 
 <body>
-
-
+  <%- include('nav.html')%>
+<!-- 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">HN App</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -27,14 +27,14 @@
           <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Write</a>
+          <a class="nav-link" href="/write">Write</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">임시</a>
         </li>
       </ul>
     </div>
-  </nav>
+  </nav> -->
 
   <!-- 반복문 -->
 
@@ -48,41 +48,66 @@
     <% }%> -->
   <!-- <h4>할 일 제목 : <%= posts[1].제목 %> </h4>
   <p> 할 일 마감 날짜 : <%= posts[1].날짜 %></p> -->
-  <h4 class="m1-2 my-3">서버에서 가져온 할 일 리스트</h4>
-  <ul class="list-group list-group-flush">
-    <% for (let i=0; i < posts.length ; i++){ %>
-      <li class="list-group-item">
-        <h4>할 일 제목 : <%= posts[i].제목 %>
-        </h4>
-        <p> 할 일 마감 날짜 : <%= posts[i].날짜 %>
-        </p>
-        <button class="delete">삭제</button>
-      </li>
-      <% }%>
+  <div class="container mt-3">
+    <ul class="list-group ">
+      <% for (let i=0; i < posts.length ; i++){ %>
+        <li class="list-group-item">
+          <!-- <p>글번호 :<%= posts[i]._id %> </p> -->
+          <h4>할 일 제목 : <%= posts[i].제목 %>
+          </h4>
+          <p> 할 일 마감 날짜 : <%= posts[i].날짜 %>
+          </p>
+          <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>">삭제</button>
+        </li>
+        <% }%>
 
 
-  </ul>
+    </ul>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 
 
   <script>
-    $('.delete').click(() => {
-      $.ajax({
-        method: "DELETE",
-        url: "/delete",
-        data: { _id : "_id"}
-      }).done(function (result) {
 
-      })
-    })
+    $('.delete').click(function () {
+      const 글번호 = $(this).data('id'); // 현재 클릭된 요소의 data-id 값을 가져와서 글번호 변수에 할당
+      const 부모요소 = $(this).closest('li'); // 현재 클릭된 요소의 가장 가까운 부모 li 요소를 찾아서 부모요소 변수에 할당
+
+      $.ajax({
+        method: "DELETE", // HTTP DELETE 메소드를 사용하여 AJAX 요청을 보냄
+        url: "/delete", // /delete 경로로 요청을 보냄
+        data: { _id: 글번호 } // 요청에 _id 값을 데이터로 포함시킴
+      }).done(function () { // 요청이 성공하면 실행되는 콜백 함수
+        console.log('삭제 성공'); // 삭제 성공 메시지 출력
+        부모요소.fadeOut(() => 부모요소.remove()); // 부모요소를 서서히 사라지게 만들고, 사라진 후에 제거함
+      }).fail(function () { // 요청이 실패하면 실행되는 콜백 함수
+        console.log('삭제 실패'); // 삭제 실패 메시지 출력
+      });
+    });
 
 
   </script>
 
 
 
+  <!-- $('.delete').click((e) => {
+  //target 은 내가 누른 id값을 가져와 주라는 것임 
+  //dataset 내가 누른 숨겨져 있는 요소의 id를 가져와 달라는 거임
+  let 글번호 = e.target.dataset.id; // 지금 클린한 것
+  let 지금누른거 = $(this); // 지금 이벤트 동작하는 곳
+  $.ajax({
+    method: "DELETE",
+    url: "/delete",
+    data: { _id:e.target.dataset.id }
+  }).done(function (result) {
+    // 삭제버튼을 누르면 페이지를 새로고침 하는 기능 fall
+    console.log('삭제 성공')
+    지금누른거.parent('li').fadeOut();//parent = ~의 부모중 li 태그를 찾아주라는 것
+  }).fail(() => {
 
+  })
+}) -->
 
 
   <!-- Optional JavaScript; choose one of the two! -->

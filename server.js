@@ -3,8 +3,12 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 const MongoClient = require('mongodb').MongoClient;
+const methodOverride = require('method-override')
+app.use(methodOverride('_method'))
 app.set('view engine', 'ejs')
 
+
+app.use('/public', express.static('public'));
 
 let db;
 MongoClient.connect("mongodb+srv://admin:1q2w3e4r@cluster0.iklsc33.mongodb.net/?retryWrites=true&w=majority", { useUnifiedTopology: true }, (error, client) => {
@@ -15,21 +19,6 @@ MongoClient.connect("mongodb+srv://admin:1q2w3e4r@cluster0.iklsc33.mongodb.net/?
     //     if (error) {return console.log(error);}
 
     // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -55,9 +44,39 @@ app.get('/list', (req, res) => {
     db.collection('post').find().toArray((error, result) => {
         console.log(result)
         res.render('list.ejs', { posts: result });
+        
     })
 
 
+});
+
+// 수정기능
+app.get('/edit/:id', (req, res) => {
+    db.collection('post').findOne({ _id: parseInt(req.params.id) }, (err, result) => {
+        console.log(result)
+        res.render('edit.ejs', { post: result })
+    })
+
+})
+
+app.put('/edit',(req,res)=>{
+    db.collection('post').updateOne()
+})
+
+// 상세 페이지
+app.get('/detail/:id', async (req, res) => {
+    try {
+        const result = await db.collection('post').findOne({ _id: parseInt(req.params.id) });
+        if (!result) {
+            res.status(404).send('게시물을 찾을 수 없습니다.');
+            return;
+        }
+        console.log(result);
+        res.render('detail.ejs', { data: result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('서버 오류');
+    }
 });
 
 
@@ -89,12 +108,14 @@ app.post('/add', (req, res) => {
 
 });
 
-app.delete('/delete', (req,res)=>{
+app.delete('/delete', (req, res) => {
     console.log(req.body)
     req.body._id = parseInt(req.body._id) // JS함수중에 parseInt 특정 값을 정수로 변환시켜줌 
-// 포스트라는 db 컬레션 안에 게시물번호(_id)에 따라 삭제
-    db.collection('post').deleteOne(req.body,(req,res)=>{
+    // 포스트라는 db 컬레션 안에 게시물번호(_id)에 따라 삭제
+    db.collection('post').deleteOne(req.body, (err, result) => {
         console.log("삭제완료")
+        res.status(200).send({ massage: '삭제를 완료했습니다.' });
     })
-    
+
 })
+

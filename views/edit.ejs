@@ -11,42 +11,22 @@
 
     <title>Hello, world!</title>
 </head>
-
+<!-- npm i method-override -->
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">HN App</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="write">Write</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">임시</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
+    <%- include('nav.html')%>
+    
 
     <div class="container mt-3">
-        <form action="/add" method="POST"> <!--이게 없으면 폼에 있는 정보들을 전달 못함 -->
+        <form action="/edit?_method=PUT" method="POST"> <!--이게 없으면 폼에 있는 정보들을 전달 못함 -->
           <div class="form-group">
             <label>오늘의 할일</label>
-            <input type="text" class="form-control" name="title">
+            <input value="<%= post.제목 %>" type="text" class="form-control" name="title">
           </div>
           <div class="form-group">
             <label>날짜</label>
-            <input type="text" class="form-control" name="date">
+            <input value="<%= post.날짜 %>"type="text" class="form-control" name="date">
           </div>
-          <button type="submit" class="btn btn-outline-secondary" >Submit</button>
+          <button type="submit" class="btn btn-danger" >Submit</button>
         </form>
       </div>
     
